@@ -340,10 +340,12 @@ function linktoExternal(longName, name) {
  * @param {array<object>} members.tutorials
  * @param {array<object>} members.events
  * @param {array<object>} members.interfaces
+ * @param {String} htmlTitle
  * @return {string} The HTML for the navigation sidebar.
  */
-function buildNav(members) {
-    var nav = '<h2><a href="index.html">Home</a></h2>';
+function buildNav(members, htmlTitle) {
+	htmlTitle = htmlTitle || 'Home';
+    var nav = '<h2><a href="index.html">' + htmlTitle + '</a></h2>';
     var seen = {};
     var seenTutorials = {};
 
@@ -386,6 +388,8 @@ function buildNav(members) {
 exports.publish = function(taffyData, opts, tutorials) {
     data = taffyData;
 
+	var htmlTitle = opts.title || 'Home';
+	
     var conf = env.conf.templates || {};
     conf.default = conf.default || {};
 
@@ -565,7 +569,7 @@ exports.publish = function(taffyData, opts, tutorials) {
     view.outputSourceFiles = outputSourceFiles;
 
     // once for all
-    view.nav = buildNav(members);
+    view.nav = buildNav(members, htmlTitle);
     attachModuleSymbols( find({ longname: {left: 'module:'} }), members.modules );
 
     // generate the pretty-printed source files first so other pages can link to them
@@ -579,7 +583,7 @@ exports.publish = function(taffyData, opts, tutorials) {
     var files = find({kind: 'file'}),
         packages = find({kind: 'package'});
 
-    generate('Home',
+    generate(htmlTitle,
         packages.concat(
             [{kind: 'mainpage', readme: opts.readme, longname: (opts.mainpagetitle) ? opts.mainpagetitle : 'Main Page'}]
         ).concat(files),
